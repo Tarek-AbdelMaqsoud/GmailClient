@@ -1,0 +1,54 @@
+﻿<h2>Identify Your Login Method</h2>
+<div class="row">
+    @using (Html.BeginForm("Identify", "Mail", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-5">
+            <section>
+
+                <h4>Use the free library (MailKit.Net).</h4>
+                <div>
+                    In case you choose the free library, then you need to configure your mail to use <a href="https://www.google.com/settings/security/lesssecureapps">the less secure apps </a>
+                </div>
+                <hr />
+                @Html.ValidationSummary(true)
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="freeButton" value="Try the free" class="btn btn-default" onclick="isFree()" />
+                    </div>
+                </div>
+
+            </section>
+        </div>
+        <div class="col-md-4">
+            <section>
+                <h4>Use the paid library (Limilabs).</h4>
+                <div>
+                    In case you choose the paid library, then you do not need to configure your mail.
+                </div>
+                <hr />
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="paidButton" value="Try the paid" class="btn btn-default" onclick="notFree()" />
+                    </div>
+                </div>
+            </section>
+        </div>
+        <input type="hidden" name="isFree" id="isFree" />
+    }
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+
+            $("#freeButton").click(function () {
+                $("#isFree").val("true");
+            });
+            $("#paidButton").click(function () {
+                $("#isFree").val("false");
+            });
+        });
+    </script>
+}

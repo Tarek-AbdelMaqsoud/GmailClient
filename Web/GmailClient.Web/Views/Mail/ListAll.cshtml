@@ -1,0 +1,146 @@
+﻿@model List<GmailClient.Classes.Mail>
+@{
+    ViewBag.Title = "All Messages";
+}
+<link href="~/Content/ListAll.css" rel="stylesheet" />
+<div class="row">
+    <div class="alert alert-success hide" id="errorSpan">
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.PageNumber" id="pageNumber" name="pageNumber" />
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3 col-md-2">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Gmail <span class="caret"></span>
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <!-- Split button -->
+            <div class="btn-group" onclick="SelectAll()">
+                <button type="button" class="btn btn-default">
+                    <div class="checkbox" style="margin: 0;">
+                        <label>
+                            <input type="checkbox" id="CheckAll" />
+                        </label>
+                    </div>
+                </button>
+            </div>
+            <button type="button" class="btn btn-default" data-toggle="tooltip" title="Refresh">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+            <!-- Single button -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="btnDelete">
+                    Delete
+                </button>
+            </div>
+
+            @using (Html.BeginForm("ListAll", "Mail", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "NextPrevForm" }))
+            {
+                <div class="pull-right">
+                    @{
+                        var start = ((ViewBag.PageNumber - 1) * Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["MessagesPerPage"])) + 1;
+                        var end = (ViewBag.PageNumber * Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["MessagesPerPage"]));
+                    }
+                    <span class="text-muted"><b>@start</b>–<b>@end</b> of <b>@ViewBag.MessagesCount</b></span>
+                    <div class="btn-group btn-group-sm">
+
+                        @{var readOnly = "";}
+                        @if (ViewBag.PageNumber == 1)
+                        {
+                            readOnly = "disabled";
+                        }
+                        <button type="button" class="btn btn-default" id="PrevButton" @readOnly>
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-default" id="NextButton">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                    </div>
+                </div>
+                            }
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-sm-3 col-md-2">
+
+            <a href="#" class="btn btn-danger btn-sm btn-block" role="button" id="ComposeLink">COMPOSE</a>
+            <hr />
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active">
+                    <a href="#">Inbox </a>
+                </li>
+                <li><a href="#">Starred</a></li>
+                <li><a href="#">Important</a></li>
+                <li><a href="#">Sent Mail</a></li>
+                <li><a href="#">Drafts</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#home" data-toggle="tab">
+                        <span class="glyphicon glyphicon-inbox">
+                        </span>Primary
+                    </a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="home">
+                    <div class="list-group">
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            foreach (var message in Model)
+                            {
+                                <a href="@Url.Action("Message", "Mail", new { messageId = message.UniqueId })" class="list-group-item">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="MessageCheckBox" name="MessageCheckBox" id="@message.UniqueId" value="@message.UniqueId">
+                                        </label>
+                                    </div>
+                                    <span class="name" style="min-width: 120px;display: inline-block;">
+                                        @message.FromDisplayName
+                                    </span>
+                                    <span class="">
+                                        @message.Subject
+                                    </span>
+                                    -
+                                    @if (message.Body != null && message.Body.Length > 50)
+                                    {
+                                        <span class="text-muted" style="font-size: 11px;">
+                                            @message.Body.Substring(0, 20);
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 11px;">
+                                            @message.Subject;
+                                        </span>
+                                    }
+                                    <span class="badge">@message.TimeReceived.ToString("MMMM dd")</span>
+                                    @if (message.HasAttachment)
+                                    {
+                                        <span class="pull-right">
+                                            <span class="glyphicon glyphicon-paperclip">
+                                            </span>
+                                        </span>
+                                    }
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("Compose")
+@*<script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>*@

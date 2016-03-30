@@ -1,0 +1,11 @@
+﻿@model GmailClient.Classes.Mail
+@{
+    ViewBag.Title = "Message";
+}
+
+<h2>Message</h2>
+
+<h4>From: </h4> @Model.FromDisplayName
+<h4>To: </h4> @Model.To
+<br /><br />
+<div>@Model.Body</div>
